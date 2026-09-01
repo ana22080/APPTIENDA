@@ -12,9 +12,9 @@
     .form-group { margin-bottom: 15px; }
     label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
     input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-    input:focus { border-color: #27ae60; outline: none; }
-    button { width: 100%; padding: 14px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    button:hover { background-color: #219150; }
+    input:focus { border-color: #72c0da; outline: none; }
+    button { width: 100%; padding: 14px; background-color: #7ac4e3; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background-color: #8674fa; }
     #status { margin-top: 15px; text-align: center; font-weight: bold; }
   </style>
 </head>
@@ -29,23 +29,23 @@
     </div>
     
     <div class="form-group">
-      <label>💵 Dinero en Efectivo ($)</label>
-      <input type="number" id="efectivo" placeholder="0" min="0" required>
+      <label>💵 Dinero En Efectivo ($)</label>
+      <input type="text" id="efectivo" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <div class="form-group">
-      <label>💳 Dinero por Transferencias ($)</label>
-      <input type="number" id="transferencias" placeholder="0" min="0" required>
+      <label>💳 Dinero Por Transferencias ($)</label>
+      <input type="text" id="transferencias" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <div class="form-group">
-      <label>📦 Dinero Retirado para Pedidos ($)</label>
-      <input type="number" id="retiroPedidos" placeholder="0" min="0" required>
+      <label>📦 Dinero Retirado Del Dia Para Pedidos ($)</label>
+      <input type="text" id="retiroPedidos" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <div class="form-group">
-      <label>🚚 Valor Total Pedidos del Día ($)</label>
-      <input type="number" id="totalPedidos" placeholder="0" min="0" required>
+      <label>🚚 Valor Total Pedidos Del Día ($)</label>
+      <input type="text" id="totalPedidos" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <button type="submit" id="btnEnviar">Guardar Registro</button>
@@ -58,6 +58,23 @@
   // REEMPLAZA ESTA URL CON LA QUE TE DIO GOOGLE APPS SCRIPT
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTGmXLFw9lUg5QzOVOF6vWUWbg-15zr3gIuh6QXB8yvFtU-Xte2D6C4kKbGz7K4DI5/exec";
 
+  // Función para dar formato con puntos de miles (1.200.200)
+  document.querySelectorAll('.monto').forEach(input => {
+    input.addEventListener('input', function(e) {
+      let valor = e.target.value.replace(/\D/g, ''); // Quita letras y caracteres que no sean números
+      if (valor) {
+        e.target.value = new Intl.NumberFormat('de-DE').format(valor); // Usa el formato de miles con punto
+      } else {
+        e.target.value = '';
+      }
+    });
+  });
+
+  // Limpiar puntos antes de enviar los datos a Google Sheets
+  function limpiarNumero(val) {
+    return val ? val.replace(/\./g, '') : '0';
+  }
+
   document.getElementById('cajaForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -67,14 +84,13 @@
     btn.disabled = true;
     btn.innerText = "Guardando...";
     status.innerText = "";
-    status.style.color = "black";
 
     const payload = {
       nombre: document.getElementById('nombre').value,
-      efectivo: document.getElementById('efectivo').value,
-      transferencias: document.getElementById('transferencias').value,
-      retiroPedidos: document.getElementById('retiroPedidos').value,
-      totalPedidos: document.getElementById('totalPedidos').value
+      efectivo: limpiarNumero(document.getElementById('efectivo').value),
+      transferencias: limpiarNumero(document.getElementById('transferencias').value),
+      retiroPedidos: limpiarNumero(document.getElementById('retiroPedidos').value),
+      totalPedidos: limpiarNumero(document.getElementById('totalPedidos').value)
     };
 
     fetch(SCRIPT_URL, {
