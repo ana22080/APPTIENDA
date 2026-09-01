@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cierre de Caja Diario</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
+    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+    h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+    input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+    input:focus { border-color: #27ae60; outline: none; }
+    button { width: 100%; padding: 14px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background-color: #219150; }
+    #status { margin-top: 15px; text-align: center; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>📱 Cierre de Caja</h2>
+  <form id="cajaForm">
+    <div class="form-group">
+      <label>👤 Nombre del Encargado</label>
+      <input type="text" id="nombre" placeholder="Ej: Carlos Pérez" required>
+    </div>
+    
+    <div class="form-group">
+      <label>💵 Dinero en Efectivo ($)</label>
+      <input type="number" id="efectivo" placeholder="0" min="0" required>
+    </div>
+    
+    <div class="form-group">
+      <label>💳 Dinero por Transferencias ($)</label>
+      <input type="number" id="transferencias" placeholder="0" min="0" required>
+    </div>
+    
+    <div class="form-group">
+      <label>📦 Dinero Retirado para Pedidos ($)</label>
+      <input type="number" id="retiroPedidos" placeholder="0" min="0" required>
+    </div>
+    
+    <div class="form-group">
+      <label>🚚 Valor Total Pedidos del Día ($)</label>
+      <input type="number" id="totalPedidos" placeholder="0" min="0" required>
+    </div>
+    
+    <button type="submit" id="btnEnviar">Guardar Registro</button>
+  </form>
+  
+  <div id="status"></div>
+</div>
+
+<script>
+  // REEMPLAZA ESTA URL CON LA QUE TE DIO GOOGLE APPS SCRIPT
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTGmXLFw9lUg5QzOVOF6vWUWbg-15zr3gIuh6QXB8yvFtU-Xte2D6C4kKbGz7K4DI5/exec";
+
+  document.getElementById('cajaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('btnEnviar');
+    const status = document.getElementById('status');
+    
+    btn.disabled = true;
+    btn.innerText = "Guardando...";
+    status.innerText = "";
+    status.style.color = "black";
+
+    const payload = {
+      nombre: document.getElementById('nombre').value,
+      efectivo: document.getElementById('efectivo').value,
+      transferencias: document.getElementById('transferencias').value,
+      retiroPedidos: document.getElementById('retiroPedidos').value,
+      totalPedidos: document.getElementById('totalPedidos').value
+    };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      status.innerText = "✅ ¡Registrado con éxito!";
+      status.style.color = "#27ae60";
+      document.getElementById('cajaForm').reset();
+    })
+    .catch(error => {
+      status.innerText = "❌ Error al guardar datos.";
+      status.style.color = "red";
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerText = "Guardar Registro";
+    });
+  });
+</script>
+
+</body>
+</html>
