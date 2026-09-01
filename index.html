@@ -8,73 +8,99 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
     .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+    
+    /* Estilo del botón de Excel */
+    .btn-excel {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #2980b9;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+    .btn-excel:hover { background-color: #1f618d; }
+
     h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
     .form-group { margin-bottom: 15px; }
     label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
     input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-    input:focus { border-color: #72c0da; outline: none; }
-    button { width: 100%; padding: 14px; background-color: #7ac4e3; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    button:hover { background-color: #170c63; }
+    input:focus { border-color: #27ae60; outline: none; }
+    
+    .btn-guardar { width: 100%; padding: 14px; background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn-guardar:hover { background-color: #219150; }
     #status { margin-top: 15px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <div class="card">
+  <!-- BOTÓN PARA IR A GOOGLE SHEETS / EXCEL -->
+  <a href="PEGA_AQUI_EL_ENLACE_DE_TU_HOJA_DE_EXCEL" target="_blank" class="btn-excel">
+    📊 Ver Excel / Hoja de Cálculo
+  </a>
+
   <h2>📱 Cierre de Caja</h2>
+  
   <form id="cajaForm">
     <div class="form-group">
       <label>👤 Nombre del Encargado</label>
-      <input type="text" id="nombre" placeholder="Ej: Camila Arango" required>
+      <input type="text" id="nombre" placeholder="Ej: Ana" required>
     </div>
     
     <div class="form-group">
-      <label>💵 Dinero En Efectivo ($)</label>
+      <label>💵 Dinero en Efectivo ($)</label>
       <input type="text" id="efectivo" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <div class="form-group">
-      <label>💳 Dinero Por Transferencias ($)</label>
+      <label>💳 Dinero por Transferencias ($)</label>
       <input type="text" id="transferencias" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <div class="form-group">
-      <label>📦 Dinero Retirado Del Dia Para Pedidos ($)</label>
+      <label>📦 Dinero Retirado para Pedidos ($)</label>
       <input type="text" id="retiroPedidos" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
     <div class="form-group">
-      <label>🚚 Valor Total Pedidos Del Día ($)</label>
+      <label>🚚 Valor Total Pedidos del Día ($)</label>
       <input type="text" id="totalPedidos" class="monto" placeholder="0" inputmode="numeric" required>
     </div>
     
-    <button type="submit" id="btnEnviar">Guardar Registro</button>
+    <button type="submit" id="btnEnviar" class="btn-guardar">Guardar Registro</button>
   </form>
   
   <div id="status"></div>
 </div>
 
 <script>
-  // REEMPLAZA ESTA URL CON LA QUE TE DIO GOOGLE APPS SCRIPT
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzm3lxtKRoX2CooKr5YfxWthfzRW00J0cm0R07EYYBtRiBYBpbENGXvBFqOjGIAqaXj/exec";
+  // URL DE TU SCRIPT DE GOOGLE APPS SCRIPT
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzU2j79_ZOASm3BUUuKPnJWk4kA852pgdwYriSAUaAXsJrq20-9BwzgrK79VC8xbs1c/exec";
 
-  // Función para dar formato con puntos de miles (1.200.200)
+  // Formato con puntos de miles mientras se escribe
   document.querySelectorAll('.monto').forEach(input => {
     input.addEventListener('input', function(e) {
-      let valor = e.target.value.replace(/\D/g, ''); // Quita letras y caracteres que no sean números
+      let valor = e.target.value.replace(/\D/g, ''); 
       if (valor) {
-        e.target.value = new Intl.NumberFormat('de-DE').format(valor); // Usa el formato de miles con punto
+        e.target.value = new Intl.NumberFormat('es-CO').format(valor); 
       } else {
         e.target.value = '';
       }
     });
   });
 
-  // Limpiar puntos antes de enviar los datos a Google Sheets
+  // Limpiar puntos antes de enviar
   function limpiarNumero(val) {
     return val ? val.replace(/\./g, '') : '0';
   }
 
+  // Guardar datos
   document.getElementById('cajaForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
